@@ -263,6 +263,13 @@ for intLogFile = 1:intLogs
     strLogPath = sStimFiles(vecReorderStimFiles(intLogFile)).folder;
     cellStim{intLogFile} = load(fullpath(strLogPath,sStimFiles(vecReorderStimFiles(intLogFile)).name));
 
+    %fix for old MovingDots/GratingPatches (by RH)
+    if ~isfield(cellStim{intLogFile}.structEP,'strExpType') && strcmp(cellStim{intLogFile}.structEP.sStimParams.strStimType,'MovingDots')
+        cellStim{intLogFile}.structEP.strExpType = 'MovingDots';
+    elseif ~isfield(cellStim{intLogFile}.structEP,'strExpType') && strcmp(cellStim{intLogFile}.structEP.sStimParams.strStimType,'GratingPatches')
+        cellStim{intLogFile}.structEP.strExpType = 'GratingPatches';
+    end
+
     if isfield(cellStim{intLogFile}.structEP,'strExpType')
         strStimType = cellStim{intLogFile}.structEP.strExpType;
     else %old format
@@ -794,7 +801,7 @@ catch
             end
         end
         %msg
-        fprintf('Cell %d/%d, Z-p=%.3f,M-p=%.3f, Non-stat=%.3f, Viol=%.3f, Contam=%.0f, FracMiss=%.0f [%s]\n',...
+        fprintf('Cell %d/%d, Z-p=%.3f,M-p=%.3f, Non-stat=%.3f, Viol=%.3f, Contam=%.0f, FracMiss=%.3f [%s]\n',...
             intCluster,intClustNum,nanmin(ZetaP),nanmin(MeanP),sOut.dblNonstationarityIndex,sOut.dblViolIdx1ms,vecKilosortContamination(intCluster),dblFractionMiss,getTime);
     end
 
